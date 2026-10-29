@@ -1,7 +1,7 @@
 
 graph TB
     subgraph Internet["☁️ Internet (Linode Cloud)"]
-        subgraph Linode["Linode VPS — 139.162.62.154"]
+        subgraph Linode["Linode VPS — <WAZUH_SERVER_IP>"]
             subgraph Docker["Docker Containers"]
                 WM["🛡️ Wazuh Manager<br/>Port 1514, 1515, 55000"]
                 WI["🔍 Wazuh Indexer<br/>OpenSearch — Port 9200"]

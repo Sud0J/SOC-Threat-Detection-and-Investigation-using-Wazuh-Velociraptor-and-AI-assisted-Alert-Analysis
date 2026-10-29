@@ -67,8 +67,8 @@ The lab consists of four main components distributed across cloud and local virt
 
 | Component | Platform | IP Address | Role |
 |-----------|----------|------------|------|
-| Wazuh Server (Docker) | Linode VPS (Cloud) | 139.162.62.154 | SIEM — log collection, alert generation, active response |
-| Velociraptor Server | Linode VPS (Cloud) | 139.162.62.154 | Forensics — endpoint investigation and threat hunting |
+| Wazuh Server (Docker) | Linode VPS (Cloud) | <WAZUH_SERVER_IP> | SIEM — log collection, alert generation, active response |
+| Velociraptor Server | Linode VPS (Cloud) | <WAZUH_SERVER_IP> | Forensics — endpoint investigation and threat hunting |
 | Ubuntu 24.04 VM | VMware (Local) | 192.168.110.130 | Agent/Victim — monitored endpoint with Wazuh agent + Velociraptor client |
 | Kali Linux VM | VMware (Local) | 192.168.110.129 | Attacker — runs brute-force attacks using Hydra |
 | Windows 11 VM | VMware (Local) | 192.168.110.131 | Registered Wazuh agent (disconnected — insufficient RAM to run simultaneously) |
@@ -86,9 +86,9 @@ The following diagram illustrates the complete lab architecture, showing all com
 
 The Wazuh server and Velociraptor server are hosted on a Linode VPS (Linode 2 GB plan) located in the SG (Singapore) region. The server runs Docker containers for the Wazuh stack.
 
-> **[INSERT SCREENSHOT: Linode Dashboard — showing wazuh_docker server running with IP 139.162.62.154]**
+> **[INSERT SCREENSHOT: Linode Dashboard — showing wazuh_docker server running with IP <WAZUH_SERVER_IP>]**
 
-*Figure 3.2: Linode Cloud Manager showing the wazuh_docker server instance running with public IP 139.162.62.154 in the Singapore region.*
+*Figure 3.2: Linode Cloud Manager showing the wazuh_docker server instance running with public IP <WAZUH_SERVER_IP> in the Singapore region.*
 
 ### 3.4 Docker Containers
 
@@ -151,7 +151,7 @@ docker-compose up -d
 
 ### 4.3 Wazuh Dashboard
 
-After deployment, the Wazuh Dashboard is accessible at `https://139.162.62.154`. The dashboard provides a comprehensive overview of the security posture, including agent status, alert severity levels, and quick access to all security modules.
+After deployment, the Wazuh Dashboard is accessible at `https://<WAZUH_SERVER_IP>`. The dashboard provides a comprehensive overview of the security posture, including agent status, alert severity levels, and quick access to all security modules.
 
 > **[INSERT SCREENSHOT: Wazuh Overview page — showing Agents Summary (Active 1, Disconnected 1), Last 24 Hours Alerts (Medium severity: 37, Low severity: 1,487)]**
 
@@ -165,7 +165,7 @@ The agent deployment process is streamlined through the Wazuh Dashboard:
 
 1. Navigate to **Endpoints** → **Deploy new agent**
 2. Select the operating system and architecture
-3. Enter the Wazuh Manager IP address (139.162.62.154)
+3. Enter the Wazuh Manager IP address (<WAZUH_SERVER_IP>)
 4. Copy and run the generated installation commands on the target machine
 
 > **[INSERT SCREENSHOT: Wazuh Deploy New Agent page — showing the installation commands and requirements]**
@@ -248,7 +248,7 @@ During the configuration wizard, the following settings were specified:
 - **OS:** Linux
 - **Datastore directory:** /opt/velociraptor
 - **SSL:** Self-Signed
-- **Public IP:** 139.162.62.154
+- **Public IP:** <WAZUH_SERVER_IP>
 - **Frontend port:** 8000 (client communication)
 - **GUI port:** 8889 (web interface)
 - **Admin username:** admin
@@ -273,10 +273,10 @@ nohup ./velociraptor --config server.config.yaml frontend -v > velo.log 2>&1 &
 
 ### 5.3 Accessing the Velociraptor GUI
 
-After starting the server, the Velociraptor web interface is accessible at `https://139.162.62.154:8889`. Since a self-signed SSL certificate is used, the browser displays a certificate warning which can be safely bypassed for this lab environment.
+After starting the server, the Velociraptor web interface is accessible at `https://<WAZUH_SERVER_IP>:8889`. Since a self-signed SSL certificate is used, the browser displays a certificate warning which can be safely bypassed for this lab environment.
 
 **To take this screenshot:**
-1. Open your browser and go to `https://139.162.62.154:8889`
+1. Open your browser and go to `https://<WAZUH_SERVER_IP>:8889`
 2. Click through the certificate warning
 3. Log in with the admin credentials you set during configuration
 4. You will see the Welcome page with common tasks listed
@@ -291,7 +291,7 @@ To connect the Ubuntu VM to the Velociraptor server, the client configuration fi
 
 ```bash
 # On the Ubuntu VM — copy the client config from the Linode server
-scp root@139.162.62.154:~/client.config.yaml ~/client.config.yaml
+scp root@<WAZUH_SERVER_IP>:~/client.config.yaml ~/client.config.yaml
 
 # Download the Velociraptor binary
 wget https://github.com/Velocidex/velociraptor/releases/download/v0.72/velociraptor-v0.72.0-linux-amd64 -O velociraptor
@@ -310,7 +310,7 @@ Once the client connects, it appears in the Velociraptor GUI. To view the client
 3. The search results will display all connected clients with their Client ID, Hostname, FQDN, OS Version, and online status (green dot = online)
 
 **Take this screenshot now:**
-1. Go to `https://139.162.62.154:8889`
+1. Go to `https://<WAZUH_SERVER_IP>:8889`
 2. Click the search bar → type `*` → press Enter
 3. You should see your Ubuntu client listed with a green dot
 

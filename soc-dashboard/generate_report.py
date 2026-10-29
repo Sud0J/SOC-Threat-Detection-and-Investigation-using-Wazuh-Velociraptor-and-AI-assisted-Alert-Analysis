@@ -274,8 +274,8 @@ doc.add_paragraph(
 add_table(
     ["Component", "Platform", "IP Address", "Role"],
     [
-        ["Wazuh Server (Docker)", "Linode VPS (Cloud)", "139.162.62.154", "SIEM — log collection, alerts, active response"],
-        ["Velociraptor Server", "Linode VPS (Cloud)", "139.162.62.154", "Forensics — endpoint investigation"],
+        ["Wazuh Server (Docker)", "Linode VPS (Cloud)", "<WAZUH_SERVER_IP>", "SIEM — log collection, alerts, active response"],
+        ["Velociraptor Server", "Linode VPS (Cloud)", "<WAZUH_SERVER_IP>", "Forensics — endpoint investigation"],
         ["Ubuntu 24.04 VM", "VMware (Local)", "192.168.110.130", "Agent/Victim — monitored endpoint"],
         ["Kali Linux VM", "VMware (Local)", "192.168.110.129", "Attacker — brute-force with Hydra"],
         ["Windows 11 VM", "VMware (Local)", "192.168.110.131", "Registered Wazuh agent (disconnected)"],
@@ -304,7 +304,7 @@ doc.add_paragraph(
 
 add_figure("linode_dashboard",
     "Figure 3.2: Linode Cloud Manager showing the wazuh_docker server instance running with public IP "
-    "139.162.62.154 in the Singapore region.")
+    "<WAZUH_SERVER_IP> in the Singapore region.")
 
 doc.add_heading("3.4 Docker Containers", level=2)
 doc.add_paragraph(
@@ -383,7 +383,7 @@ add_code_block(
 
 doc.add_heading("4.3 Wazuh Dashboard", level=2)
 doc.add_paragraph(
-    "After deployment, the Wazuh Dashboard is accessible at https://139.162.62.154. The dashboard provides a "
+    "After deployment, the Wazuh Dashboard is accessible at https://<WAZUH_SERVER_IP>. The dashboard provides a "
     "comprehensive overview of the security posture, including agent status, alert severity levels, and quick "
     "access to all security modules."
 )
@@ -404,7 +404,7 @@ doc.add_paragraph("The agent deployment process is streamlined through the Wazuh
 for step in [
     "Navigate to Endpoints → Deploy new agent",
     "Select the operating system and architecture",
-    "Enter the Wazuh Manager IP address (139.162.62.154)",
+    "Enter the Wazuh Manager IP address (<WAZUH_SERVER_IP>)",
     "Copy and run the generated installation commands on the target machine",
 ]:
     doc.add_paragraph(step, style="List Bullet")
@@ -535,7 +535,7 @@ for setting in [
     "OS: Linux",
     "Datastore directory: /opt/velociraptor",
     "SSL: Self-Signed",
-    "Public IP: 139.162.62.154",
+    "Public IP: <WAZUH_SERVER_IP>",
     "Frontend port: 8000 (client communication)",
     "GUI port: 8889 (web interface)",
     "Admin username: admin",
@@ -553,7 +553,7 @@ add_code_block("nohup ./velociraptor --config server.config.yaml frontend -v > v
 
 doc.add_heading("5.3 Accessing the Velociraptor GUI", level=2)
 doc.add_paragraph(
-    "After starting the server, the Velociraptor web interface is accessible at https://139.162.62.154:8889."
+    "After starting the server, the Velociraptor web interface is accessible at https://<WAZUH_SERVER_IP>:8889."
 )
 
 add_figure("velociraptor_welcome",
@@ -564,7 +564,7 @@ doc.add_heading("5.4 Client Deployment on Ubuntu VM", level=2)
 doc.add_paragraph("To connect the Ubuntu VM to the Velociraptor server, the client configuration file was transferred:")
 add_code_block(
     "# Copy client config from Linode\n"
-    "scp root@139.162.62.154:~/client.config.yaml ~/client.config.yaml\n\n"
+    "scp root@<WAZUH_SERVER_IP>:~/client.config.yaml ~/client.config.yaml\n\n"
     "# Download Velociraptor binary on Ubuntu\n"
     "wget https://github.com/Velocidex/velociraptor/releases/download/v0.72/"
     "velociraptor-v0.72.0-linux-amd64 -O velociraptor\n"
@@ -1596,12 +1596,12 @@ load_dotenv()
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 app = Flask(__name__)
 
-WAZUH_URL = os.getenv("WAZUH_URL", "https://139.162.62.154")
+WAZUH_URL = os.getenv("WAZUH_URL", "https://<WAZUH_SERVER_IP>")
 WAZUH_API_PORT = os.getenv("WAZUH_API_PORT", "55000")
-INDEXER_URL = os.getenv("INDEXER_URL", "https://139.162.62.154")
+INDEXER_URL = os.getenv("INDEXER_URL", "https://<WAZUH_SERVER_IP>")
 INDEXER_PORT = os.getenv("INDEXER_PORT", "9200")
 INDEXER_USER = os.getenv("INDEXER_USER", "admin")
-INDEXER_PASS = os.getenv("INDEXER_PASS", "SecretPassword")
+INDEXER_PASS = os.getenv("INDEXER_PASS")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 
 WAZUH_API_BASE = f"{WAZUH_URL}:{WAZUH_API_PORT}"
@@ -1761,12 +1761,12 @@ doc.add_paragraph(
 
 add_code_block(
     '# Wazuh API connection\n'
-    'WAZUH_URL=https://139.162.62.154\n'
+    'WAZUH_URL=https://<WAZUH_SERVER_IP>\n'
     'WAZUH_API_PORT=55000\n'
     'WAZUH_USER=wazuh-wui\n'
     'WAZUH_PASS=<your-wazuh-password>\n\n'
     '# Wazuh Indexer (OpenSearch)\n'
-    'INDEXER_URL=https://139.162.62.154\n'
+    'INDEXER_URL=https://<WAZUH_SERVER_IP>\n'
     'INDEXER_PORT=9200\n'
     'INDEXER_USER=admin\n'
     'INDEXER_PASS=<your-indexer-password>\n\n'

@@ -540,7 +540,7 @@
 
                 if (data.error) {
                     document.getElementById('alertsBody').innerHTML =
-                        `<tr><td colspan="4"><div class="error-msg">${data.error}</div></td></tr>`;
+                        `<tr><td colspan="4"><div class="error-msg">${escapeHtml(data.error)}</div></td></tr>`;
                     updateConnectionStatus(false);
                     return;
                 }
@@ -580,8 +580,8 @@
                     return `<tr>
                         <td>${time}</td>
                         <td><span class="level-badge ${levelClass}">${levelText} (${level})</span></td>
-                        <td>${ruleId}</td>
-                        <td>${desc}</td>
+                        <td>${escapeHtml(ruleId)}</td>
+                        <td>${escapeHtml(desc)}</td>
                     </tr>`;
                 }).join('');
 
@@ -591,7 +591,7 @@
                 console.error('Failed to load alerts:', e);
                 updateConnectionStatus(false);
                 document.getElementById('alertsBody').innerHTML =
-                    `<tr><td colspan="4"><div class="error-msg">Failed to connect: ${e.message}</div></td></tr>`;
+                    `<tr><td colspan="4"><div class="error-msg">Failed to connect: ${escapeHtml(e.message)}</div></td></tr>`;
             }
         }
 
@@ -602,7 +602,7 @@
 
                 if (data.error) {
                     document.getElementById('agentsList').innerHTML =
-                        `<div class="error-msg" style="margin:1rem">${data.error}</div>`;
+                        `<div class="error-msg" style="margin:1rem">${escapeHtml(data.error)}</div>`;
                     return;
                 }
 
@@ -619,12 +619,12 @@
                         <div class="agent-info">
                             <div class="agent-icon ${isLinux ? 'linux' : 'windows'}">${isLinux ? '🐧' : '🪟'}</div>
                             <div>
-                                <div class="agent-name">${agent.name || agent.id}</div>
-                                <div class="agent-os">${osName} ${agent.os?.version || ''}</div>
+                                <div class="agent-name">${escapeHtml(agent.name || agent.id)}</div>
+                                <div class="agent-os">${escapeHtml(osName)} ${escapeHtml(agent.os?.version || '')}</div>
                             </div>
                         </div>
                         <span class="agent-status" style="color: ${isActive ? 'var(--accent-green)' : 'var(--accent-red)'}">
-                            ● ${agent.status || 'unknown'}
+                            ● ${escapeHtml(agent.status || 'unknown')}
                         </span>
                     </div>`;
                 }).join('');
@@ -643,7 +643,7 @@
 
                 if (data.error) {
                     document.getElementById('fimList').innerHTML =
-                        `<div class="error-msg" style="margin:1rem">${data.error}</div>`;
+                        `<div class="error-msg" style="margin:1rem">${escapeHtml(data.error)}</div>`;
                     return;
                 }
 
@@ -665,8 +665,8 @@
                     if (event.includes('deleted') || event.includes('removed')) eventClass = 'fim-deleted';
 
                     return `<div class="fim-item">
-                        <span class="fim-path">${path}</span>
-                        <span class="fim-event ${eventClass}">${event}</span>
+                        <span class="fim-path">${escapeHtml(path)}</span>
+                        <span class="fim-event ${eventClass}">${escapeHtml(event)}</span>
                     </div>`;
                 }).join('');
             } catch (e) {
@@ -697,12 +697,12 @@
                 const data = await resp.json();
 
                 if (data.error) {
-                    output.innerHTML = `<div class="error-msg">${data.error}</div>`;
+                    output.innerHTML = `<div class="error-msg">${escapeHtml(data.error)}</div>`;
                 } else {
                     output.innerHTML = markdownToHtml(data.analysis);
                 }
             } catch (e) {
-                output.innerHTML = `<div class="error-msg">Analysis failed: ${e.message}</div>`;
+                output.innerHTML = `<div class="error-msg">Analysis failed: ${escapeHtml(e.message)}</div>`;
             }
 
             btn.disabled = false;
@@ -734,12 +734,12 @@
 
                 const thinkingEl = output.querySelector('div:last-child');
                 if (data.error) {
-                    thinkingEl.innerHTML = `<div class="error-msg">${data.error}</div>`;
+                    thinkingEl.innerHTML = `<div class="error-msg">${escapeHtml(data.error)}</div>`;
                 } else {
                     thinkingEl.innerHTML = '<div style="margin-top:0.5rem"><strong style="color:var(--accent-purple)">AI:</strong></div>' + markdownToHtml(data.response);
                 }
             } catch (e) {
-                output.querySelector('div:last-child').innerHTML = `<div class="error-msg">Failed: ${e.message}</div>`;
+                output.querySelector('div:last-child').innerHTML = `<div class="error-msg">Failed: ${escapeHtml(e.message)}</div>`;
             }
 
             output.scrollTop = output.scrollHeight;
@@ -747,7 +747,7 @@
 
         function markdownToHtml(md) {
             if (!md) return '';
-            return md
+            return escapeHtml(md)
                 .replace(/^### (.*$)/gm, '<h3>$1</h3>')
                 .replace(/^## (.*$)/gm, '<h2>$1</h2>')
                 .replace(/^# (.*$)/gm, '<h1>$1</h1>')
@@ -762,10 +762,13 @@
                 .replace(/\n/g, '<br>');
         }
 
-        function escapeHtml(str) {
-            const div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
         }
 
         function updateConnectionStatus(connected) {
